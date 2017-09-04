@@ -133,7 +133,7 @@ val_features, val_targets = features[-60*24:], targets[-60*24:]
 # 
 #   
 
-# In[221]:
+# In[272]:
 
 
 class NeuralNetwork(object):
@@ -185,14 +185,11 @@ class NeuralNetwork(object):
             # TODO: Hidden layer - Replace these values with your calculations.
             hidden_inputs = np.dot(X, self.weights_input_to_hidden) # signals into hidden layer
             hidden_outputs = self.activation_function(hidden_inputs) # signals from hidden layer
-#             print("hidden_outputs:")
-#             print(hidden_outputs)
 
             # TODO: Output layer - Replace these values with your calculations.
             final_inputs = np.dot(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
             final_outputs = final_inputs # signals from final output layer
-#             print("final_outputs:")
-#             print(final_outputs)
+
             #### Implement the backward pass here ####
             ### Backward pass ###
 
@@ -201,36 +198,20 @@ class NeuralNetwork(object):
             
             # TODO: Calculate the hidden layer's contribution to the error
             hidden_error = np.dot(error, self.weights_hidden_to_output.T)
-#             print("hidden_error:")
-#             print(hidden_error)
             
             # TODO: Backpropagated error terms - Replace these values with your calculations.
             output_error_term = error
-            print("output_error_term:")
-            print(output_error_term)
-            
             
             hidden_error_term = hidden_error*hidden_outputs*(1-hidden_outputs)
             
             # Weight step (input to hidden)
             delta_weights_i_h += np.dot(hidden_error_term[:,None], X[None, :]).T
-#             print("delta_weights_i_h:")
-#             print(delta_weights_i_h)
-            # Weight step (hidden to output)
-            
-            
-            
+            # Weight step (hidden to output)   
             delta_weights_h_o += np.dot(hidden_outputs[:, None], output_error_term[:, None])
-            print("delta_weights_h_o:")
-            print(delta_weights_h_o)
 
         # TODO: Update the weights - Replace these values with your calculations.
         self.weights_hidden_to_output += self.lr*delta_weights_h_o/n_records # update hidden-to-output weights with gradient descent step
-        print("self.weights_hidden_to_output:")
-        print(self.weights_hidden_to_output)
         self.weights_input_to_hidden += self.lr*delta_weights_i_h/n_records # update input-to-hidden weights with gradient descent step
-        print("self.weights_input_to_hidden:")
-        print(self.weights_input_to_hidden) 
 
     def run(self, features):
         ''' Run a forward pass through the network with input features 
@@ -252,7 +233,7 @@ class NeuralNetwork(object):
         return final_outputs
 
 
-# In[222]:
+# In[273]:
 
 
 def MSE(y, Y):
@@ -263,7 +244,7 @@ def MSE(y, Y):
 # 
 # 运行这些单元测试，检查你的网络实现是否正确。这样可以帮助你确保网络已正确实现，然后再开始训练网络。这些测试必须成功才能通过此项目。
 
-# In[223]:
+# In[274]:
 
 
 import unittest
@@ -360,15 +341,15 @@ unittest.TextTestRunner().run(suite)
 # 
 # 隐藏节点越多，模型的预测结果就越准确。尝试不同的隐藏节点的数量，看看对性能有何影响。你可以查看损失字典，寻找网络性能指标。如果隐藏单元的数量太少，那么模型就没有足够的空间进行学习，如果太多，则学习方向就有太多的选择。选择隐藏单元数量的技巧在于找到合适的平衡点。
 
-# In[266]:
+# In[285]:
 
 
 import sys
 
 ### Set the hyperparameters here ###
-iterations = 1000
-learning_rate = 1.0
-hidden_nodes = 10
+iterations = 1200
+learning_rate = 1.1
+hidden_nodes = 7
 output_nodes = 1
 
 N_i = train_features.shape[1]
@@ -393,7 +374,7 @@ for ii in range(iterations):
     losses['validation'].append(val_loss)
 
 
-# In[267]:
+# In[286]:
 
 
 plt.plot(losses['train'], label='Training loss')
@@ -406,7 +387,7 @@ _ = plt.ylim()
 # 
 # 使用测试数据看看网络对数据建模的效果如何。如果完全错了，请确保网络中的每步都正确实现。
 
-# In[268]:
+# In[287]:
 
 
 fig, ax = plt.subplots(figsize=(8,4))
@@ -424,10 +405,10 @@ ax.set_xticks(np.arange(len(dates))[12::24])
 _ = ax.set_xticklabels(dates[12::24], rotation=45)
 
 
-# In[271]:
+# In[ ]:
 
 
-train_features
+
 
 
 # In[ ]:
