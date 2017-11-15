@@ -376,7 +376,7 @@ tests.test_build_nn(build_nn)
 # ]
 # ```
 
-# In[18]:
+# In[32]:
 
 
 def get_batches(int_text, batch_size, seq_length):
@@ -388,23 +388,16 @@ def get_batches(int_text, batch_size, seq_length):
     :return: Batches as a Numpy array
     """
     # TODO: Implement Function
-    per_batch = batch_size * seq_length
-    n_batches = len(int_text)//per_batch
-    #print(n_batches)
-    dropped_text = int_text[:n_batches*per_batch]
-    length = len(dropped_text)
-    
-    dropped_text = np.reshape(dropped_text, (batch_size, -1))
-    
-    result_arr = np.empty((2, batch_size, seq_length))
-    batches = []
-    for n in range(0, dropped_text.shape[1],  seq_length):
-        inputs = dropped_text[:, n:n+seq_length]
-        targets = np.zeros_like(inputs)       
-        targets[:, :-1], targets[:, -1] = inputs[:, 1:], inputs[:, 0]
-        one_batch = np.array((inputs, targets))
-        batches.append(one_batch)
-    return np.array(batches)
+
+    n_batches = int(len(int_text) / (batch_size * seq_length))
+    # Drop the last few characters to make only full batches
+    xdata = np.array(int_text[: n_batches * batch_size * seq_length])
+    ydata = np.array(int_text[1: n_batches * batch_size * seq_length + 1])
+    ydata[-1] = xdata[0]
+
+    x_batches = np.split(xdata.reshape(batch_size, -1), n_batches, 1)
+    y_batches = np.split(ydata.reshape(batch_size, -1), n_batches, 1)
+    return np.array(list(zip(x_batches, y_batches)))
 
 
 """
@@ -425,7 +418,7 @@ tests.test_get_batches(get_batches)
 # - Set `learning_rate` to the learning rate.
 # - Set `show_every_n_batches` to the number of batches the neural network should print progress.
 
-# In[19]:
+# In[33]:
 
 
 # Number of Epochs
@@ -452,7 +445,7 @@ save_dir = './save'
 # ### Build the Graph
 # Build the graph using the neural network you implemented.
 
-# In[20]:
+# In[34]:
 
 
 """
@@ -489,7 +482,7 @@ with train_graph.as_default():
 # ## Train
 # Train the neural network on the preprocessed data.  If you have a hard time getting a good loss, check the [forms](https://discussions.udacity.com/) to see if anyone is having the same problem.
 
-# In[21]:
+# In[35]:
 
 
 """
@@ -528,7 +521,7 @@ with tf.Session(graph=train_graph) as sess:
 # ## Save Parameters
 # Save `seq_length` and `save_dir` for generating a new TV script.
 
-# In[22]:
+# In[36]:
 
 
 """
@@ -540,7 +533,7 @@ helper.save_params((seq_length, save_dir))
 
 # # Checkpoint
 
-# In[23]:
+# In[37]:
 
 
 """
@@ -565,7 +558,7 @@ seq_length, load_dir = helper.load_params()
 # 
 # Return the tensors in the following tuple `(InputTensor, InitialStateTensor, FinalStateTensor, ProbsTensor)` 
 
-# In[24]:
+# In[38]:
 
 
 def get_tensors(loaded_graph):
@@ -591,7 +584,7 @@ tests.test_get_tensors(get_tensors)
 # ### Choose Word
 # Implement the `pick_word()` function to select the next word using `probabilities`.
 
-# In[25]:
+# In[39]:
 
 
 def pick_word(probabilities, int_to_vocab):
@@ -616,7 +609,7 @@ tests.test_pick_word(pick_word)
 # ## Generate TV Script
 # This will generate the TV script for you.  Set `gen_length` to the length of TV script you want to generate.
 
-# In[26]:
+# In[40]:
 
 
 gen_length = 200
