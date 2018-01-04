@@ -1,3 +1,6 @@
 *.tar.gz
 *.p
 *checkpoint*
+*data*
+*/__pychache__*
+
